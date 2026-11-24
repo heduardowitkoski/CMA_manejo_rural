@@ -39,34 +39,8 @@ Aplicativo móvel para produtores rurais delimitarem áreas de manejo no mapa e 
 
 ## 3. Casos de Uso
 
-### 3.1 Diagrama de Casos de Uso (PlantUML)
-*(Cole no [PlantText.com](https://www.planttext.com/))*
-
-```plantuml
-@startuml
-left to right direction
-actor Produtor
-actor Nuvem
-
-rectangle "Manejo Rural" {
-    usecase "Cadastrar Área" as UC1
-    usecase "Marcar por Toque / GPS / Manual" as UC2
-    usecase "Calcular Área em ha" as UC3
-    usecase "Lançar Atividade" as UC4
-    usecase "Consultar Saldo" as UC5
-    usecase "Sincronizar Nuvem" as UC6
-
-    UC1 ..> UC2 : <<include>>
-    UC1 ..> UC3 : <<include>>
-    UC4 ..> UC5 : <<include>>
-}
-
-Produtor --> UC1
-Produtor --> UC4
-Produtor --> UC6
-UC6 --> Nuvem
-@enduml
-```
+### 3.1 Diagrama de Casos de Uso
+![Diagrama de Casos de Uso](DiagramaCasosDeUso.png)
 
 ### 3.2 Descrição dos Casos de Uso Principais
 * **Cadastrar Área:** O produtor insere o nome, marca 3 ou mais pontos (no mapa, via GPS ou manualmente), o app desenha o polígono, calcula os hectares e salva localmente e na nuvem.
@@ -74,125 +48,23 @@ UC6 --> Nuvem
 
 ---
 
-## 4. Diagrama de Classes (PlantUML)
-
-```plantuml
-@startuml
-class Produtor {
-    +idProdutor: String
-}
-
-class AreaManejo {
-    +nome: String
-    +areaHa: Double
-    +calcularArea(): Double
-    +calcularSaldo(): Double
-}
-
-class Ponto {
-    +lat: Double
-    +lon: Double
-}
-
-class Atividade {
-    +descricao: String
-    +horas: Double
-    +custo: Double
-    +receita: Double
-    +avaliacao: String
-}
-
-Produtor "1" --> "*" AreaManejo : possui
-AreaManejo "1" *-- "3..*" Ponto : formada por
-AreaManejo "1" *-- "*" Atividade : possui
-@enduml
-```
+## 4. Diagrama de Classes
+![Diagrama de Classes](DiagramaClasses.png)
 
 ---
 
-## 5. Diagramas de Sequência (PlantUML)
+## 5. Diagramas de Sequência
 
 ### 5.1 Sequência: Marcar Área e Salvar
-```plantuml
-@startuml
-autonumber
-actor Produtor
-boundary Tela
-control "Motor de Calculo" as Calc
-entity TinyDB
-database CloudDB
-
-Produtor -> Tela : Adiciona pontos (Toque, GPS ou Manual)
-Tela -> Calc : calcularAreaM2(pontos)
-Calc --> Tela : Retorna hectares
-Produtor -> Tela : Clica em "Salvar Área"
-Tela -> TinyDB : Salvar offline ("areas")
-Tela -> CloudDB : Sincronizar nuvem ("areas_" + id)
-Tela --> Produtor : "Área salva com sucesso"
-@enduml
-```
+![Diagrama de Sequência - Marcar Área](DiagramaSequenciaMarcarArea.png)
 
 ### 5.2 Sequência: Lançar Atividade
-```plantuml
-@startuml
-autonumber
-actor Produtor
-boundary Tela
-control "Calculadora" as Calc
-entity TinyDB
-database CloudDB
-
-Produtor -> Tela : Preenche descricao, custo e receita
-Produtor -> Tela : Clica em "Salvar Atividade"
-Tela -> Calc : Atualizar totais e saldo
-Tela -> TinyDB : Salvar offline
-Tela -> CloudDB : Sincronizar nuvem
-Tela --> Produtor : "Atividade salva com sucesso"
-@enduml
-```
+![Diagrama de Sequência - Lançar Atividade](DiagramaSequenciaLancarAtividade.png)
 
 ---
 
 ## 6. Modelo Entidade-Relacionamento (ER)
-
-```plantuml
-@startuml
-entity "PRODUTOR" as produtor {
-  * id_produtor [PK]
-}
-
-entity "AREA_MANEJO" as area {
-  * id_area [PK]
-  --
-  * id_produtor [FK]
-  nome
-  area_ha
-}
-
-entity "PONTO" as ponto {
-  * id_ponto [PK]
-  --
-  * id_area [FK]
-  latitude
-  longitude
-}
-
-entity "ATIVIDADE" as atividade {
-  * id_atividade [PK]
-  --
-  * id_area [FK]
-  descricao
-  horas
-  custo
-  receita
-  avaliacao
-}
-
-produtor ||--o{ area : possui
-area ||--|{ ponto : tem
-area ||--o{ atividade : tem
-@enduml
-```
+![Modelo Entidade-Relacionamento](ModeloER.png)
 
 ---
 
