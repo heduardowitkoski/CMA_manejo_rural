@@ -1,7 +1,7 @@
 # Documentação de Projeto de Software e Relatório Técnico
 
 **Sistema:** Sistema de Delimitação de Áreas de Manejo Rural e Gestão Operacional  
-**Ambiente:** Mobile / Edge Computing (Android)  
+**Ambiente:** Mobile  
 **Versão do Documento:** 1.0  
 
 ---
